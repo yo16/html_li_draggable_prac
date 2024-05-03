@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Draggable li</title>
+    <style>
+      li {
+        border: 1px solid #99f;
+        background-color: #eef;
+        margin: 5px;
+        cursor: move;
+      }
+    </style>
+  </head>
+  <body>
+    <ul id="myUl">
+        <li draggable="true" style="background-color:#fcc">list item1</li>
+        <li draggable="true" style="background-color:#ffc">list item2</li>
+        <li draggable="true" style="background-color:#ccf">list item3</li>
+    </ul>
+    <hr />
+    隣のulまでドラッグできてしまわないか確認するためのul↓<br />
+    <ul id="myUl2">
+        <li draggable="true">list item2-1</li>
+        <li draggable="true">list item2-2</li>
+        <li draggable="true">list item2-3</li>
+    </ul>
+    <script language="JavaScript">
+        const list = document.getElementById('myUl');
+        let draggingElm;    // ドラッグしているli要素
+
+        list.addEventListener('dragstart', function(e) {
+            draggingElm = e.target;
+            //console.log(draggingElm); // つかんだli要素
+            e.dataTransfer.effectAllowed = 'move';
+        });
+        
+        // ドラッグしている要素が何かの上にoverしたときのハンドラ
+        // ここでeは、ドラッグして覆いかぶされた要素＝targetとしている
+        // 最初はドラッグ直後なので自分自身で、マウスを移動すると変わる
+        list.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+
+            const target = e.target;
+            console.log(target);
+            // 自分でもなく、li要素の場合に変更する
+            if (target && target !== draggingElm && target.nodeName === 'LI') {
+                const rect = target.getBoundingClientRect();
+                // 0.5より小さい=マウスが上半分にある=false, 0.5より大きい=下半分にある=true
+                const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+                // ドラッグしているものの上半分にある場合は、次の要素のbeforeにinsert
+                // 下半分にある場合は、今の要素のbeforeにinsert
+                // 一番下の場合はnextSiblingはnullで、nullをinsertBeforeに渡すと最後になる
+                list.insertBefore(draggingElm, next && target.nextSibling || target);
+            }
+        });
+
+        list.addEventListener('dragend', function(e) {
+            draggingElm = null;
+        });
+    </script> 
+  </body>
+</html>
