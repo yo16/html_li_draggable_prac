@@ -39,7 +39,7 @@
             e.dataTransfer.dropEffect = 'move';
 
             const target = e.target;
-            console.log(target);
+            //console.log(target);
             // 自分でもなく、li要素の場合に変更する
             if (target && target !== draggingElm && target.nodeName === 'LI') {
                 const rect = target.getBoundingClientRect();
